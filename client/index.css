@@ -1,0 +1,45 @@
+body {
+    background-color: black;
+}
+
+h1 {
+    font-family: 'Barrio';
+    color: crimson;
+}
+
+div {
+    text-align: center; 
+}
+
+#headerName {
+    font-size: 32px;
+}
+
+#mainName {
+    font-size: 22px;
+}
+
+#playerName {
+    font-size: 36px;
+    color: wheat;
+    display: none;
+}
+
+#mainButton {
+    background-color: crimson;
+    font-family: 'Barrio';
+    font-size: 22px;
+    border: none;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+
+#mainButton:hover {
+    background-color: white;
+    color: crimson;
+}
+
+#mainCanvas {
+    border: 1px solid crimson;
+    display: none;
+}

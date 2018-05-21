@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang=en>
+    <head>
+        <meta charset=utf-8>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href='https://fonts.googleapis.com/css?family=Barrio' rel='stylesheet'>
+        <link rel="stylesheet" type="text/css" href="client/index.css">
+
+        <title>Ball Fondlers</title>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="client/index.js"></script>
+    </head>
+    <body>
+        <div id="containerDiv">
+            <div id="headerDiv">
+                <h1 id="headerName">Ball Fondlers 2000</h1>
+            </div>
+            <div id="mainDiv">
+                <h1 id="mainName">Press the button to start</h1>
+                <h1 id="playerName"></h1>
+                <button id="mainButton" onclick="getName()">Click me!</button>
+            </div>
+                <div id="canvasDiv">
+                    <canvas id="mainCanvas" width="500" height="500"></canvas>
+            </div>
+        </div>
+    </body>    
+</html>

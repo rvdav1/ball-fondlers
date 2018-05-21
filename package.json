@@ -2,13 +2,14 @@
   "name": "ball-fondlers",
   "version": "1.0.0",
   "description": "Yep, it is called Ball Fondlers.",
-  "main": "index.js",
+  "main": "app.js",
   "dependencies": {
     "socket.io": "2.1.1",
-    "express": "4.16.3"
+    "express": "4.16.3",
+    "winston": "3.0.0-rc5"
   },
   "scripts": {
-    "start": "node index"
+    "start": "nodemon app"
   },
   "repository": {
     "type": "git",
