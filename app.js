@@ -7,65 +7,85 @@ var io = require('socket.io')(http);
 var logger = require('./server/log');
 var names = require('./server/name');
 var player = require('./server/player');
+var room = require('./server/room');
 
-const PLAYER_NUMBER = 4;
+const PLAYER_NUMBER = 2;
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/client/index.html');
 });
 app.use('/client', express.static(__dirname + '/client'));
 
+var roomList = [];
 var rc = 0;
-var playerList = [{}];
+var currentRoom = new room('room'+rc, PLAYER_NUMBER);
 
 io.on('connection', function(socket){
+    let clientRoom = -1;
+    let clientIndex = -1;
+    let shouldGet = true;
     logger.info('A user connected: ' + socket.request.socket.remoteAddress);
 
-    socket.on('gName', function (){
-        if( io.nsps['/'].adapter.rooms[rc] && 
-            io.nsps['/'].adapter.rooms[rc].length > (PLAYER_NUMBER - 1)){
-            rc++;
-            playerList.push({});
+    socket.on('gName', function(){
+        if (shouldGet){
+            socket.join('room'+rc);
+            clientRoom = 'room'+rc;
+            clientIndex = currentRoom.storePlayer(new player(socket.id,names()));
+            shouldGet = false;
+            logger.info('A user asked for name ' +  
+                        currentRoom.playerList[clientIndex].name + ' ' +
+                        currentRoom.roomName);
+            socket.emit('joinData', currentRoom.joinData(clientIndex));
+            if (currentRoom.isFull()){
+                currentRoom.isGame = true;
+                currentRoom.setupStart();
+                io.sockets.in(currentRoom.roomName).emit('startGame',currentRoom.startData());
+                roomList.push(currentRoom);
+                rc++;
+                currentRoom = new room('room'+rc, PLAYER_NUMBER);
+            }
         }
-        socket.join(rc);
-        if (io.nsps['/'].adapter.rooms[rc].length === PLAYER_NUMBER){
-            playerList[rc].runGame = true;
-            
-            io.sockets.in(rc).emit('startGame');
+    });
+
+    socket.on('keyPress', function(data){
+        let listIndex = -1;
+        for (let i = 0; i < roomList.length; i++){
+            if (roomList[i].roomName === clientRoom){
+                listIndex = i;
+                break;
+            }
         }
-        
-        let currentName = names();
-        let currentPlayer = player(socket.id,rc,currentName,250,250);
-        playerList[rc][socket.id] = currentPlayer;
-        
-        logger.info('A user asked for name and get ' + currentPlayer.name + ' in ' + currentPlayer.room);
-        socket.emit('joinData', {
-            name: currentPlayer.name,
-            x: currentPlayer.x,
-            y: currentPlayer.y
-        });
+        if (listIndex != -1){
+            if (data.inputId === 'right'){
+                roomList[listIndex].playerList[clientIndex].pressingRight = data.state;
+            } else if (data.inputId === 'left'){
+                roomList[listIndex].playerList[clientIndex].pressingLeft = data.state;
+            }
+            roomList[listIndex].playerList[clientIndex].updateTarget();
+        }
     });
  
-    socket.on('disconnect', function (){
-        if (playerList[rc]){
-            if (playerList[rc][socket.id]){
-                delete playerList[rc][socket.id];
+    socket.on('disconnect', function(){
+        if (currentRoom != -1){
+            let playerIndex = currentRoom.findPlayer(socket.id);
+            if (playerIndex != -1){
+                currentRoom.removePlayer(playerIndex);
             }
         }
         logger.info('A user disconnected');
     });
- });
+});
 
 setInterval(function(){
     let i;
-    for (i = 0; i < playerList.length; i++){
-        if (playerList[i].runGame){
-            io.sockets.in(rc).emit('newState');
+    for (i = 0; i < roomList.length; i++){
+        if (roomList[i].isGame){
+            roomList[i].gameInit();
+            io.sockets.in(roomList[i].roomName).emit('newState',roomList[i].gameData());
         }
     }
-    //socket.emit('news_by_server', 'Cow goes moo'); 
 }, 1000/25);
 
 http.listen(6066, function(){
     logger.info('listening on *:6066');
- });
+});
