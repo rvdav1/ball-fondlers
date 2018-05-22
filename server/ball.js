@@ -35,7 +35,7 @@ class Ball{
 
         let angle = rad/Math.PI * 180;
 
-        let mag = 3.5;
+        let mag = 10;
         this.velX = (dx/dist) * mag;
         this.velY = (dy/dist) * mag;
     }

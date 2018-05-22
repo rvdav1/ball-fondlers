@@ -50,7 +50,8 @@ var ctx;
 var canvasWidth = 500;
 var canvasHeight = 500;
 
-var playerColors = ["red", "green", "blue", "orange"]
+var playerColors = ["red", "green", "blue", "orange"];
+var scoreLocators = [];
 
 function getName(){
     socket.emit('gName');
@@ -72,7 +73,11 @@ socket.on('joinData', function(data){
     document.getElementById("mainCanvas").height = canvasHeight;
 
     ctx = document.getElementById("mainCanvas").getContext("2d");
-    ctx.font = '12px Arial';
+
+    scoreLocators = [{x: 20, y: canvasHeight - 20},
+                    {x: canvasWidth - 20, y: 20},
+                    {x: canvasWidth - 20, y: canvasHeight - 20},
+                    {x: 20, y: 20}];
 });
 
 function drawIt(){
@@ -88,6 +93,7 @@ function drawIt(){
         ctx.lineWidth = 1;
         ctx.strokeStyle = "white";
         ctx.stroke();
+        ctx.font = '12px Arial';
         ctx.fillStyle = "white";
         ctx.fillText(players[i].name, players[i].textX, players[i].testY);
     }
@@ -109,6 +115,9 @@ function drawIt(){
         ctx.lineWidth = 5;
         ctx.strokeStyle = playerColors[i];
         ctx.stroke();
+        ctx.font = '24px Arial';
+        ctx.fillStyle = playerColors[i];
+        ctx.fillText(players[i].points, scoreLocators[i].x, scoreLocators[i].y);
     }
 }
 
@@ -127,7 +136,7 @@ socket.on('startGame',function(data){
                             data.g[i].eX,
                             data.g[i].eY));
         textName = "player" + (i + 1).toString();
-        document.getElementById(textName).innerHTML = players[i].name + ": " + players[i].points;
+        document.getElementById(textName).innerHTML = players[i].name;
         document.getElementById(textName).style.display = "inline";
     }
 
@@ -140,13 +149,27 @@ socket.on('newState',function(data){
     let i, textName;
     for (i = 0; i < players.length; i++){
         players[i].updatePosition(data.x[i], data.y[i], data.p[i]);
-        textName = "player" + (i + 1).toString();
-        document.getElementById(textName).innerHTML = players[i].name + ": " + players[i].points;
     }
 
     for (i = 0; i < balls.length; i++){
         balls[i].updatePosition(data.bX[i], data.bY[i]);
     }
+});
+
+socket.on('winner',function(data){
+    isGame = false;
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    let i = parseInt(data.w);
+    document.getElementById("mainCanvas").style.display = "none";
+
+    for (let j = 0; j < playerCount; j++){
+        document.getElementById("player"+(j + 1).toString()).style.display = "none";
+    }
+
+    document.getElementById("winner").style.display = "inline";
+    document.getElementById("winner").style.color = playerColors[i];
+    document.getElementById("winner").innerHTML = players[i].name + "... Ez a tag odabasz";
 });
 
 setInterval(function(){

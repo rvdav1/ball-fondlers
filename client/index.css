@@ -64,3 +64,8 @@ div {
     color: orange;
     display: none;
 }
+
+#winner {
+    font-size: 44px;
+    display: none;
+}

@@ -60,7 +60,7 @@ const NICKNAMES = [ ",az agilis",
                     ",a csicska",
                     ",a murloc",
                     ",az önző",
-                    ",a jámbor",
+                    ",a rettenet",
                     ",a féktelen",
                     ",az ostoba",
                     ",a féreg",
@@ -70,14 +70,17 @@ const NICKNAMES = [ ",az agilis",
                     ",a hálátlan",
                     ",a szentségtelen",
                     ",a tisztátalan",
-                    ",a szent",
+                    ",a mocsok",
                     ",az undorító",
                     ",a hercegnő",
                     ",az iszonyat",
                     ",az ítélethozó",
                     ",az irgalmatlan",
                     ",a pusztító",
-                    ",a rettenthetetlen"
+                    ",a rettenthetetlen",
+                    ",a förtelmes",
+                    ",a face hunter",
+                    ",a bukott"
 ];
 
 function generateName(){

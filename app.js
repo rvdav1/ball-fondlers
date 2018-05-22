@@ -9,7 +9,7 @@ var names = require('./server/name');
 var player = require('./server/player');
 var room = require('./server/room');
 
-const PLAYER_NUMBER = 2;
+const PLAYER_NUMBER = 4;
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/client/index.html');
@@ -37,7 +37,7 @@ io.on('connection', function(socket){
                         currentRoom.roomName);
             socket.emit('joinData', currentRoom.joinData(clientIndex));
             if (currentRoom.isFull()){
-                currentRoom.isGame = true;
+                logger.info('A room created: ' + currentRoom.roomName);
                 currentRoom.setupStart();
                 io.sockets.in(currentRoom.roomName).emit('startGame',currentRoom.startData());
                 roomList.push(currentRoom);
@@ -69,6 +69,7 @@ io.on('connection', function(socket){
         if (currentRoom != -1){
             let playerIndex = currentRoom.findPlayer(socket.id);
             if (playerIndex != -1){
+                logger.info('A user removed from queue ' + currentRoom.playerList[playerIndex].name);
                 currentRoom.removePlayer(playerIndex);
             }
         }
@@ -77,10 +78,16 @@ io.on('connection', function(socket){
 });
 
 setInterval(function(){
-    let i;
+    let i,winner;
     for (i = 0; i < roomList.length; i++){
-        if (roomList[i].isGame){
-            roomList[i].gameInit();
+        roomList[i].gameInit();
+        winner = roomList[i].isWin();
+        if (winner != -1){
+            logger.info('A room destroyed: ' + roomList[i].roomName);
+            io.sockets.in(roomList[i].roomName).emit('winner', {w: winner});
+            roomList.splice(i, 1);
+            i--;
+        } else {
             io.sockets.in(roomList[i].roomName).emit('newState',roomList[i].gameData());
         }
     }

@@ -43,7 +43,7 @@ class Player{
 
         let angle = rad/Math.PI * 180;
 
-        let mag = 6;
+        let mag = 7;
         this.velX = (dx/dist) * mag;
         this.velY = (dy/dist) * mag;
     }

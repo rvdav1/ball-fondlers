@@ -19,8 +19,8 @@ class Room{
         for (let i = 0; i < this.roomCapacity; i++){
             this.playerList.push(-1);
         }
-        this.isGame = false;
-        this.isDelete = false;
+
+        this.winPoints = 1 * (this.roomCapacity - 1);
     }
 
     numberPlayer(){
@@ -40,7 +40,7 @@ class Room{
     findPlayer(playerId){
         for (let i = 0; i < this.roomCapacity; i++){
             if (this.playerList[i] != -1){
-                if (this.playerList[i].playerId === playerId){
+                if (this.playerList[i].id === playerId){
                     return i;
                 }
             }
@@ -190,6 +190,46 @@ class Room{
         return data;
     }
 
+    //I just found it on the net and its working!
+    pDistance(x, y, x1, y1, x2, y2) {
+        var A = x - x1;
+        var B = y - y1;
+        var C = x2 - x1;
+        var D = y2 - y1;
+      
+        var dot = A * C + B * D;
+        var len_sq = C * C + D * D;
+        var param = -1;
+        if (len_sq != 0) //in case of 0 length line
+            param = dot / len_sq;
+      
+        var xx, yy;
+      
+        if (param < 0) {
+          xx = x1;
+          yy = y1;
+        } else if (param > 1) {
+          xx = x2;
+          yy = y2;
+        } else {
+          xx = x1 + param * C;
+          yy = y1 + param * D;
+        }
+      
+        var dx = x - xx;
+        var dy = y - yy;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    isWin(){
+        for (let i = 0; i < this.roomCapacity; i++){
+            if (this.playerList[i].points >= this.winPoints){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     gameInit(){
         let i,j,inter,rad1,rad2;
         for (i = 0; i < this.roomCapacity; i++){
@@ -242,21 +282,20 @@ class Room{
                     this.ballList[j].t = this.playerList[i].t;
                 }
                 this.ballList[j].setMovement(this.width, this.height);
-                this.ballList[j].updatePosition();
+                //this.ballList[j].updatePosition();
             }
 
             this.playerList[i].setMovement(this.width, this.height);
             this.playerList[i].updatePosition();
         }
-
         for (j = 0; j < this.roomCapacity - 1; j++){
             for (i = 0; i < this.roomCapacity; i++){
-                inter = (Math.abs((this.goalList[i].eX - this.goalList[i].sX) * this.ballList[j].x +
-                        (this.goalList[i].sY - this.goalList[i].eY) * this.ballList[j].y +
-                        (this.goalList[i].sX - this.goalList[i].eX) * this.goalList[i].sY +
-                        (this.goalList[i].eY - this.goalList[i].sY) * this.goalList[i].sX) /
-                        Math.sqrt(Math.pow(this.goalList[i].eX - this.goalList[i].sX, 2) +
-                        Math.pow(this.goalList[i].sY - this.goalList[i].eY, 2)));
+                inter = this.pDistance(this.ballList[j].x, 
+                                        this.ballList[j].y, 
+                                        this.goalList[i].sX,
+                                        this.goalList[i].sY,
+                                        this.goalList[i].eX,
+                                        this.goalList[i].eY);
                 if (inter <= this.ballList[j].radius){
                     this.playerList[i].addPoint();
                     this.ballList[j].setPosition(this.ballPos[j].x, this.ballPos[j].y);
