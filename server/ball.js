@@ -1,16 +1,10 @@
 'use strict';
 
-class Player{
-    constructor(id, name){
-        this.id = id;
-        this.name = name;
-
-        this.x = 0;
-        this.y = 0;
-        this.radius = 20;
-
-        this.pressingRight = false;
-        this.pressingLeft = false;
+class Ball{
+    constructor(x, y, t){
+        this.x = x;
+        this.y = y;
+        this.radius = 5;
 
         this.targetPointX = 0;
         this.targetPointY = 0;
@@ -18,9 +12,7 @@ class Player{
         this.velX = 0;
         this.velY = 0;
 
-        this.t = 0.01;
-
-        this.points = 0;
+        this.t = t;
     }
 
     setMovement(width, height){
@@ -43,7 +35,7 @@ class Player{
 
         let angle = rad/Math.PI * 180;
 
-        let mag = 6;
+        let mag = 3.5;
         this.velX = (dx/dist) * mag;
         this.velY = (dy/dist) * mag;
     }
@@ -53,21 +45,14 @@ class Player{
         this.y = y;
     }
 
-    updateTarget(){
-        if(this.pressingRight)
-            this.t += 0.1;
-        if(this.pressingLeft)
-            this.t -= 0.1;       
+    setT(t){
+        this.t = t;
     }
 
     updatePosition(){
         this.x += this.velX;
         this.y += this.velY;
     }
-
-    addPoint(){
-        this.points += 1;
-    }
 }
 
-module.exports = Player;
+module.exports = Ball;

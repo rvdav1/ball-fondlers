@@ -5,6 +5,7 @@ body {
 h1 {
     font-family: 'Barrio';
     color: crimson;
+    font-size: 22px;
 }
 
 div {
@@ -40,6 +41,26 @@ div {
 }
 
 #mainCanvas {
-    border: 1px solid crimson;
+    border: 1px solid white;
+    display: none;
+}
+
+#player1 {
+    color: red;
+    display: none;
+}
+
+#player2 {
+    color: green;
+    display: none;
+}
+
+#player3 {
+    color: blue;
+    display: none;
+}
+
+#player4 {
+    color: orange;
     display: none;
 }
