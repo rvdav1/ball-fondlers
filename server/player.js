@@ -25,10 +25,12 @@ class Player{
 
     setMovement(width, height){
         if (this.t >= Math.PI*2){
-            this.t = this.t % (Math.PI*2);
+            this.t -= Math.PI*2;
+        } else if (this.t <= Math.PI*-2){
+            this.t += Math.PI*2;
         }
-        let midX = ~~(width/2);
-        let midY = ~~(height/2);
+        let midX = width/2;
+        let midY = height/2;
 
         let radius = width / Math.sqrt(2);
 

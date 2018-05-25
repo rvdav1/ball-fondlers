@@ -80,7 +80,8 @@ const NICKNAMES = [ ",az agilis",
                     ",a rettenthetetlen",
                     ",a förtelmes",
                     ",a face hunter",
-                    ",a bukott"
+                    ",a bukott",
+                    ",a hóhányó"
 ];
 
 function generateName(){

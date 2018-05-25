@@ -9,7 +9,7 @@ var names = require('./server/name');
 var player = require('./server/player');
 var room = require('./server/room');
 
-const PLAYER_NUMBER = 4;
+const PLAYER_NUMBER = 2;
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/client/index.html');

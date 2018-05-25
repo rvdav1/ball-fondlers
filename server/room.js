@@ -20,7 +20,7 @@ class Room{
             this.playerList.push(-1);
         }
 
-        this.winPoints = 1 * (this.roomCapacity - 1);
+        this.winPoints = 5 * (this.roomCapacity - 1);
     }
 
     numberPlayer(){
