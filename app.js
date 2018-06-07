@@ -9,7 +9,8 @@ var names = require('./server/name');
 var player = require('./server/player');
 var room = require('./server/room');
 
-const PLAYER_NUMBER = 2;
+const PLAYER_NUMBER = 4;
+const AREA_SIZE = 500;
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/client/index.html');
@@ -18,7 +19,7 @@ app.use('/client', express.static(__dirname + '/client'));
 
 var roomList = [];
 var rc = 0;
-var currentRoom = new room('room'+rc, PLAYER_NUMBER);
+var currentRoom = new room('room'+rc, PLAYER_NUMBER, AREA_SIZE);
 
 io.on('connection', function(socket){
     let clientRoom = -1;
@@ -42,7 +43,7 @@ io.on('connection', function(socket){
                 io.sockets.in(currentRoom.roomName).emit('startGame',currentRoom.startData());
                 roomList.push(currentRoom);
                 rc++;
-                currentRoom = new room('room'+rc, PLAYER_NUMBER);
+                currentRoom = new room('room'+rc, PLAYER_NUMBER, AREA_SIZE);
             }
         }
     });

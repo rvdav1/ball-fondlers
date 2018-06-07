@@ -18,36 +18,63 @@ class Player{
         this.velX = 0;
         this.velY = 0;
 
-        this.t = 0.01;
+        this.t = 25;
 
         this.points = 0;
+
+        this.areaSize = 500;
+
+        this.gameId = -1;
+        this.lastBounce = -1;
     }
 
-    setMovement(width, height){
-        if (this.t >= Math.PI*2){
-            this.t -= Math.PI*2;
-        } else if (this.t <= Math.PI*-2){
-            this.t += Math.PI*2;
-        }
-        let midX = width/2;
-        let midY = height/2;
-
-        let radius = width / Math.sqrt(2);
-
-        this.targetPointX = radius * Math.cos(this.t) + midX;
-        this.targetPointY = radius * Math.sin(this.t) + midY;
-
+    setMovement(){
         let dx = this.targetPointX - this.x;
         let dy = this.targetPointY - this.y;
 
         let dist = Math.sqrt(dx*dx+dy*dy);
         let rad = Math.atan2(dy,dx);
 
-        let angle = rad/Math.PI * 180;
-
         let mag = 7;
         this.velX = (dx/dist) * mag;
         this.velY = (dy/dist) * mag;
+    }
+
+    setBounce(isX, side){
+        let tempVelX = this.velX,
+            tempVelY = this.velY,
+            tempTargetX = this.x,
+            tempTargetY = this.y,
+            runner = true;
+
+        if (isX){
+            tempVelX = this.velX * -1;
+        } else {
+            tempVelY = this.velY * -1;
+        }
+
+        while (runner){
+            if (tempTargetX <= this.areaSize/-2 && side != 10){
+                this.targetPointX = this.areaSize/-2;
+                this.targetPointY = ~~(tempTargetY);
+                runner = false;
+            } else if (tempTargetX >= this.areaSize/2 && side != 11){
+                this.targetPointX = this.areaSize/2;
+                this.targetPointY = ~~(tempTargetY);
+                runner = false;
+            }  else  if (tempTargetY <= this.areaSize/-2 && side != 12){
+                this.targetPointY = this.areaSize/-2;
+                this.targetPointX = ~~(tempTargetX);
+                runner = false;
+            } else if (tempTargetY >= this.areaSize/2 && side != 13){
+                this.targetPointY = this.areaSize/2;
+                this.targetPointX = ~~(tempTargetX);
+                runner = false;
+            }
+            tempTargetX += tempVelX;
+            tempTargetY += tempVelY;
+        }
+        this.fixTargets();
     }
 
     setPosition(x, y){
@@ -55,16 +82,90 @@ class Player{
         this.y = y;
     }
 
+    setArea(areaSize){
+        this.areaSize = areaSize;
+    }
+
     updateTarget(){
-        if(this.pressingRight)
-            this.t += 0.1;
-        if(this.pressingLeft)
-            this.t -= 0.1;       
+        if(this.pressingLeft){
+            if(this.targetPointX === this.areaSize/-2){
+                if (this.targetPointY < this.areaSize/2){
+                    this.targetPointY += this.t;
+                } else {
+                    this.targetPointX += this.t;
+                    this.targetPointY = this.areaSize/2;
+                }
+            } else if (this.targetPointX < this.areaSize/2){
+                if (this.targetPointY === this.areaSize/2){
+                    this.targetPointX += this.t;
+                } else {
+                    this.targetPointX -= this.t;
+                    this.targetPointY = this.areaSize/-2;
+                }
+            } else {
+                if (this.targetPointY > this.areaSize/-2){
+                    this.targetPointY -= this.t;
+                } else {
+                    this.targetPointX -= this.t;
+                    this.targetPointY = this.areaSize/-2;
+                }
+            }
+            this.lastBounce = -1;
+        }
+        if(this.pressingRight){
+            if(this.targetPointX === this.areaSize/-2){
+                if (this.targetPointY > this.areaSize/-2){
+                    this.targetPointY -= this.t;
+                } else {
+                    this.targetPointX += this.t;
+                    this.targetPointY = this.areaSize/-2;
+                }
+            } else if (this.targetPointX < this.areaSize/2){
+                if (this.targetPointY === this.areaSize/2){
+                    this.targetPointX -= this.t;
+                } else {
+                    this.targetPointX += this.t;
+                    this.targetPointY = this.areaSize/-2;
+                }
+            } else {
+                if (this.targetPointY < this.areaSize/2){
+                    this.targetPointY += this.t;
+                } else {
+                    this.targetPointX -= this.t;
+                    this.targetPointY = this.areaSize/2;
+                }
+            }
+            this.lastBounce = -1;
+        }
+        this.fixTargets();           
+    }
+
+    fixTargets(){
+        if (this.targetPointX > this.areaSize/2){
+            this.targetPointX = this.areaSize/2;
+        } else if (this.targetPointX < this.areaSize/-2){
+            this.targetPointX = this.areaSize/2;
+        }
+        if (this.targetPointY > this.areaSize/2){
+            this.targetPointY = this.areaSize/2;
+        } else if (this.targetPointY < this.areaSize/-2){
+            this.targetPointY = this.areaSize/2;
+        } 
     }
 
     updatePosition(){
         this.x += this.velX;
         this.y += this.velY;
+        if (this.x - this.radius < this.areaSize/-2){
+            this.x = this.areaSize/-2 + this.radius;
+        } else if (this.x + this.radius > this.areaSize/2){
+            this.x = this.areaSize/2 - this.radius;
+        }
+        if (this.y - this.radius < this.areaSize/-2){
+            this.y = this.areaSize/-2 + this.radius;
+        } else if (this.y + this.radius > this.areaSize/2){
+            this.y = this.areaSize/2 - this.radius;
+        }
     }
 
     addPoint(){

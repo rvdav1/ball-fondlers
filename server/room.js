@@ -3,24 +3,23 @@
 var ball = require('./ball');
 
 class Room{
-    constructor(roomName, roomCapacity){
+    constructor(roomName, roomCapacity, areaSize){
         this.roomName = roomName;
         this.roomCapacity = roomCapacity;
 
-        this.width = 500;
-        this.height = 500;
+        this.areaSize = areaSize;
 
         this.playerList = [];
         this.ballList = [];
-        this.ballPos = [{x: this.width/2, y: this.height/2}, 
-                        {x: this.width/2 - 10, y: this.height/2},
-                        {x: this.width/2 + 10, y: this.height/2}];
+        this.ballPos = [{x: 0, y: 0}, 
+                        {x: -10, y: 0},
+                        {x: 10, y: 0}];
         this.goalList = [];
         for (let i = 0; i < this.roomCapacity; i++){
             this.playerList.push(-1);
         }
 
-        this.winPoints = 5 * (this.roomCapacity - 1);
+        this.winPoints = 3 * (this.roomCapacity - 1);
     }
 
     numberPlayer(){
@@ -52,6 +51,7 @@ class Room{
         for (let i = 0; i < this.roomCapacity; i++){
             if (this.playerList[i] === -1){
                 this.playerList[i] = player;
+                this.playerList[i].setArea(this.areaSize);
                 return i;
             }
         }
@@ -67,42 +67,50 @@ class Room{
     }
 
     setupStart(){
-        this.playerList[0].x = this.playerList[0].radius * 2;
-        this.playerList[0].y = this.playerList[0].radius * 2;
-        this.playerList[0].t = Math.PI;
-        this.goalList.push({sX: 0, 
-                            sY: this.height/2 - 40, 
-                            eX: 0, 
-                            eY: this.height/2 + 40});
+        this.playerList[0].x = this.areaSize/-2 + this.playerList[0].radius * 2;
+        this.playerList[0].y = this.areaSize/-2 + this.playerList[0].radius * 2;
+        this.playerList[0].targetPointX = this.areaSize/2;
+        this.playerList[0].targetPointY = this.areaSize/2;
+        this.playerList[0].gameId = 0;
+        this.goalList.push({sX: this.areaSize/-2, 
+                            sY: -40, 
+                            eX: this.areaSize/-2, 
+                            eY: 40});
 
-        this.playerList[1].x = this.width - this.playerList[1].radius * 2;
-        this.playerList[1].y = this.height - this.playerList[1].radius * 2;
-        this.playerList[1].t = 0;
-        this.goalList.push({sX: this.width, 
-                            sY: this.height/2 - 40, 
-                            eX: this.width, 
-                            eY: this.height/2 + 40});
-        this.ballList.push(new ball(this.ballPos[0].x, this.ballPos[0].y, Math.random() * Math.PI * 2));
+        this.playerList[1].x = this.areaSize/2 - this.playerList[1].radius * 2;
+        this.playerList[1].y = this.areaSize/2 - this.playerList[1].radius * 2;
+        this.playerList[1].targetPointX = this.areaSize/-2;
+        this.playerList[1].targetPointY = this.areaSize/-2;
+        this.playerList[1].gameId = 1;
+        this.goalList.push({sX: this.areaSize/2, 
+                            sY: -40, 
+                            eX: this.areaSize/2, 
+                            eY: 40});
+        this.ballList.push(new ball(this.ballPos[0].x, this.ballPos[0].y, this.areaSize));
 
         if (this.roomCapacity > 2){
-            this.playerList[2].x = this.playerList[2].radius * 2;
-            this.playerList[2].y = this.height - this.playerList[2].radius * 2;
-            this.playerList[2].t = Math.PI/2;
-            this.goalList.push({sX: this.width/2 - 40, 
-                                sY: this.height, 
-                                eX: this.width/2 + 40, 
-                                eY: this.height});
-            this.ballList.push(new ball(this.ballPos[1].x, this.ballPos[1].y, Math.random() * Math.PI * 2));      
+            this.playerList[2].x = this.areaSize/-2 + this.playerList[2].radius * 2;
+            this.playerList[2].y = this.areaSize/2 - this.playerList[2].radius * 2;
+            this.playerList[2].targetPointX = this.areaSize/2;
+            this.playerList[2].targetPointY = this.areaSize/-2;
+            this.playerList[2].gameId = 2;
+            this.goalList.push({sX: -40, 
+                                sY: this.areaSize/2, 
+                                eX: 40, 
+                                eY: this.areaSize/2});
+            this.ballList.push(new ball(this.ballPos[1].x, this.ballPos[1].y, this.areaSize));      
         }
         if (this.roomCapacity > 3){
-            this.playerList[3].x = this.width - this.playerList[3].radius * 2;
-            this.playerList[3].y = this.playerList[3].radius * 2;
-            this.playerList[3].t = Math.PI/2 * 3;
-            this.goalList.push({sX: this.width/2 - 40, 
-                                sY: 0, 
-                                eX: this.width/2 + 40, 
-                                eY: 0});
-            this.ballList.push(new ball(this.ballPos[2].x, this.ballPos[2].y, Math.random() * Math.PI * 2));       
+            this.playerList[3].x = this.areaSize/2 - this.playerList[3].radius * 2;
+            this.playerList[3].y = this.areaSize/-2 + this.playerList[3].radius * 2;
+            this.playerList[3].targetPointX = this.areaSize/-2;
+            this.playerList[3].targetPointY = this.areaSize/2;
+            this.playerList[3].gameId = 3;
+            this.goalList.push({sX: -40, 
+                                sY: this.areaSize/-2, 
+                                eX: 40, 
+                                eY: this.areaSize/-2});
+            this.ballList.push(new ball(this.ballPos[2].x, this.ballPos[2].y, this.areaSize));       
         }
     }
 
@@ -125,7 +133,7 @@ class Room{
     getXs(){
         let data = [];
         for (let i = 0; i < this.roomCapacity; i++){
-            data.push(this.playerList[i].x);
+            data.push(this.playerList[i].x + this.areaSize/2);
         }
         return data;
     }
@@ -133,7 +141,7 @@ class Room{
     getYs(){
         let data = [];
         for (let i = 0; i < this.roomCapacity; i++){
-            data.push(this.playerList[i].y);
+            data.push(this.playerList[i].y + this.areaSize/2);
         }
         return data;
     }
@@ -149,7 +157,7 @@ class Room{
     getBallXs(){
         let data = [];
         for (let i = 0; i < this.roomCapacity - 1; i++){
-            data.push(this.ballList[i].x);
+            data.push(this.ballList[i].x + this.areaSize/2);
         }
         return data;
     }
@@ -157,15 +165,26 @@ class Room{
     getBallYs(){
         let data = [];
         for (let i = 0; i < this.roomCapacity - 1; i++){
-            data.push(this.ballList[i].y);
+            data.push(this.ballList[i].y + this.areaSize/2);
+        }
+        return data;
+    }
+
+    getGoalList(){
+        let data = [];
+        for (let i = 0; i < this.roomCapacity; i++){
+            data.push({ sX: this.goalList[i].sX + this.areaSize/2,
+                        sY: this.goalList[i].sY + this.areaSize/2,
+                        eX: this.goalList[i].eX + this.areaSize/2,
+                        eY: this.goalList[i].eY + this.areaSize/2});
         }
         return data;
     }
 
     joinData(playerIndex){
         let data = {name: this.playerList[playerIndex].name,
-                width: this.width,
-                height: this.height};
+                width: this.areaSize,
+                height: this.areaSize};
         return data;
     }
 
@@ -177,7 +196,7 @@ class Room{
                 y: this.getYs(),
                 bX: this.getBallXs(),
                 bY: this.getBallYs(),
-                g: this.goalList};
+                g: this.getGoalList()};
         return data;
     }
 
@@ -233,19 +252,27 @@ class Room{
     gameInit(){
         let i,j,inter,rad1,rad2;
         for (i = 0; i < this.roomCapacity; i++){
-            if (this.playerList[i].x - this.playerList[i].radius <= 0){
+            if (this.playerList[i].x - this.playerList[i].radius <= this.areaSize/-2 && 
+            this.playerList[i].lastBounce != 10){
+                this.playerList[i].lastBounce = 10;
+                this.playerList[i].setBounce(true,10);
                 this.playerList[i].x += this.playerList[i].radius/2;
-                this.playerList[i].t += Math.PI/2;
-            } else if (this.playerList[i].x + this.playerList[i].radius >= this.width){
+            } else if (this.playerList[i].x + this.playerList[i].radius >= this.areaSize/2 && 
+            this.playerList[i].lastBounce != 11){
+                this.playerList[i].lastBounce = 11;
+                this.playerList[i].setBounce(true,11);        
                 this.playerList[i].x -= this.playerList[i].radius/2;
-                this.playerList[i].t += Math.PI/2;
             }
-            if (this.playerList[i].y - this.playerList[i].radius <= 0){
+            if (this.playerList[i].y - this.playerList[i].radius <= this.areaSize/-2 && 
+            this.playerList[i].lastBounce != 12){
+                this.playerList[i].lastBounce = 12;
+                this.playerList[i].setBounce(false,12);
                 this.playerList[i].y += this.playerList[i].radius/2;
-                this.playerList[i].t += Math.PI/2;
-            } else if (this.playerList[i].y + this.playerList[i].radius >= this.height){
+            } else if (this.playerList[i].y + this.playerList[i].radius >= this.areaSize/2 && 
+            this.playerList[i].lastBounce != 13){
+                this.playerList[i].lastBounce = 13;
+                this.playerList[i].setBounce(false,13);
                 this.playerList[i].y -= this.playerList[i].radius/2;
-                this.playerList[i].t += Math.PI/2;
             }
 
             for (j = i+1; j < this.roomCapacity; j++){
@@ -254,8 +281,12 @@ class Room{
                 rad1 = Math.pow(this.playerList[j].radius - this.playerList[i].radius, 2);
                 rad2 = Math.pow(this.playerList[j].radius + this.playerList[i].radius, 2);
                 if (rad1 <= inter && rad2 >= inter){
-                    this.playerList[i].t += Math.PI/2;
-                    this.playerList[j].t += Math.PI/2;
+                    this.playerList[i].targetPointX *= -1;
+                    this.playerList[i].targetPointY *= -1;
+                    this.playerList[i].lastBounce = this.playerList[j].gameId;
+                    this.playerList[j].targetPointX *= -1;
+                    this.playerList[j].targetPointY *= -1;
+                    this.playerList[j].lastBounce = this.playerList[i].gameId;
                     if (this.playerList[i].x > this.playerList[j].x){
                         this.playerList[i].x += this.playerList[i].radius/2;
                         this.playerList[j].x -= this.playerList[j].radius/2;
@@ -279,13 +310,15 @@ class Room{
                 rad1 = Math.pow(this.ballList[j].radius - this.playerList[i].radius, 2);
                 rad2 = Math.pow(this.ballList[j].radius + this.playerList[i].radius, 2);
                 if (rad1 <= inter && rad2 >= inter){
-                    this.ballList[j].t = this.playerList[i].t;
+                    this.ballList[j].setTarget( this.playerList[i].targetPointX, 
+                                                this.playerList[i].targetPointY,
+                                                10);
+                    this.ballList[j].lastBounce = this.playerList[i].gameId;
                 }
-                this.ballList[j].setMovement(this.width, this.height);
-                //this.ballList[j].updatePosition();
+                this.ballList[j].setMovement();
             }
 
-            this.playerList[i].setMovement(this.width, this.height);
+            this.playerList[i].setMovement();
             this.playerList[i].updatePosition();
         }
         for (j = 0; j < this.roomCapacity - 1; j++){
@@ -299,25 +332,33 @@ class Room{
                 if (inter <= this.ballList[j].radius){
                     this.playerList[i].addPoint();
                     this.ballList[j].setPosition(this.ballPos[j].x, this.ballPos[j].y);
-                    this.ballList[j].setT(Math.random() * Math.PI * 2);
+                    this.ballList[j].setTarget(0,0,0);
                 }
             }
             
-            if (this.ballList[j].x - this.ballList[j].radius <= 0){
-                this.ballList[j].x += this.ballList[j].radius/2;
-                this.ballList[j].t += Math.PI/2;
-            } else if (this.ballList[j].x + this.ballList[j].radius >= this.width){
-                this.ballList[j].x -= this.ballList[j].radius/2;
-                this.ballList[j].t += Math.PI/2;
+            if (this.ballList[j].x - this.ballList[j].radius <= this.areaSize/-2 &&
+            this.ballList[j].lastBounce != 10){
+                this.ballList[j].setBounce(true,10);
+                this.ballList[j].lastBounce = 10;
+                this.ballList[j].x += this.ballList[j].radius;
+            } else if (this.ballList[j].x + this.ballList[j].radius >= this.areaSize/2 &&
+            this.ballList[j].lastBounce != 11){
+                this.ballList[j].setBounce(true,11);
+                this.ballList[j].lastBounce = 11;
+                this.ballList[j].x -= this.ballList[j].radius;
             }
-            if (this.ballList[j].y - this.ballList[j].radius <= 0){
-                this.ballList[j].y += this.ballList[j].radius/2;
-                this.ballList[j].t += Math.PI/2;
-            } else if (this.ballList[j].y + this.ballList[j].radius >= this.height){
-                this.ballList[j].y -= this.ballList[j].radius/2;
-                this.ballList[j].t += Math.PI/2;
+            if (this.ballList[j].y - this.ballList[j].radius <= this.areaSize/-2 &&
+                this.ballList[j].lastBounce != 12){
+                    this.ballList[j].setBounce(false,12);
+                    this.ballList[j].lastBounce = 12;
+                    this.ballList[j].y += this.ballList[j].radius;
+            } else if (this.ballList[j].y + this.ballList[j].radius >= this.areaSize/2 &&
+                this.ballList[j].lastBounce != 13){
+                    this.ballList[j].setBounce(false,13);
+                    this.ballList[j].lastBounce = 13;
+                    this.ballList[j].y -= this.ballList[j].radius;
             }
-            this.ballList[j].setMovement(this.width, this.height);
+            this.ballList[j].setMovement();
             this.ballList[j].updatePosition();
         }
     }

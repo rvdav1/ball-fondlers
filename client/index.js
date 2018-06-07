@@ -85,6 +85,16 @@ function drawIt(){
 
     let i;
 
+    for (i = 0; i < balls.length; i++){
+        ctx.beginPath();
+        ctx.arc(balls[i].x, balls[i].y, balls[i].radius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#404040";
+        ctx.stroke();
+    }
+    
     for (i = 0; i < players.length; i++){
         ctx.beginPath();
         ctx.arc(players[i].x, players[i].y, players[i].radius, 0, 2 * Math.PI, false);
@@ -96,16 +106,6 @@ function drawIt(){
         ctx.font = '12px Arial';
         ctx.fillStyle = "white";
         ctx.fillText(players[i].name, players[i].textX, players[i].testY);
-    }
-
-    for (i = 0; i < balls.length; i++){
-        ctx.beginPath();
-        ctx.arc(balls[i].x, balls[i].y, balls[i].radius, 0, 2 * Math.PI, false);
-        ctx.fillStyle = "white";
-        ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#404040";
-        ctx.stroke();
     }
 
     for (i = 0; i < players.length; i++){
@@ -180,17 +180,17 @@ setInterval(function(){
 
 document.onkeydown = function(event){
     if (isGame){
-        if(event.keyCode === 68)    //d
+        if(event.keyCode === 68 || event.keyCode === 37)    //d
             socket.emit('keyPress',{inputId:'right',state:true});
-        else if(event.keyCode === 65) //a
+        else if(event.keyCode === 65 || event.keyCode === 39) //a
             socket.emit('keyPress',{inputId:'left',state:true});
     }      
 }
 document.onkeyup = function(event){
     if (isGame){
-        if(event.keyCode === 68)    //d
+        if(event.keyCode === 68 || event.keyCode === 37)    //d
             socket.emit('keyPress',{inputId:'right',state:false});
-        else if(event.keyCode === 65) //a
+        else if(event.keyCode === 65 || event.keyCode === 39) //a
             socket.emit('keyPress',{inputId:'left',state:false});
     }   
 }
